@@ -1,0 +1,14 @@
+node_modules/
+dist/
+artifacts/
+.env
+.env.*
+!.env.example
+.DS_Store
+*.tsbuildinfo
+*.qoder.site
+.qoder/
+.qoder-sites/
+.qoder-sites.json
+__pycache__/
+*.pyc

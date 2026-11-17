@@ -1,0 +1,15 @@
+export type SpecimenId = 'coffee' | 'meal' | 'shirt' | 'ai';
+export type Mode = 'carbon' | 'water' | 'decay';
+export type Water = { green: number; blue: number; grey: number };
+export type Metrics = { carbon: number; plastic: number; water: Water; mass: number };
+export type Persistence = { years: number | null; label: string; note: string };
+export type AIParameters = { hours: number; gpuCount: number; gpuWatts: number; utilization: number; hostWatts: number; pue: number; wue: number; gridCarbon: number; gridWater: number; workload: number; embodiedCarbon: number; hardwareHours: number };
+export type Variant = { id: string; label: string; description: string; metrics: Metrics; persistence: Persistence; sourceIds: string[]; evidence: string; calculation: string; ai?: Partial<AIParameters>; wears?: number; washCarbon?: number; washWater?: number; endpointCarbon?: number };
+export type Layer = { id: string; label: string; short: string; material: string; kind: 'material' | 'process' | 'driver'; stage: string; variants: Variant[] };
+export type Specimen = { id: SpecimenId; number: string; name: string; english: string; subtitle: string; unit: string; boundary: string; frequency: number; frequencyUnit: 'week' | 'year'; waterScope: string; presetName: string; preset: Record<string, string>; layers: Layer[] };
+export type Selections = Record<string, string>;
+export type EvaluatedLayer = { layer: Layer; variant: Variant; metrics: Metrics; changed: boolean };
+export type Evaluation = { specimen: Specimen; layers: EvaluatedLayer[]; totals: Metrics; fullGarment?: Metrics; wears?: number; ai?: AIParameters & { itKwh: number; facilityKwh: number; effectiveHours: number } };
+export type Comparison = { baseline: Evaluation; current: Evaluation; savings: Metrics; percent: number | null };
+export type Projection = { annualCount: number; years: number; baseline: Metrics; current: Metrics; savings: Metrics; wearDemand?: number; garmentEquivalent?: number };
+export type Source = { id: string; title: string; url?: string; citation: string; use: string; limitation: string };

@@ -1,0 +1,13 @@
+import { ArrowDown, Leaf, RotateCcw, SlidersHorizontal, Zap } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import type { Comparison } from '../domain/types.ts';
+import { format, waterTotal } from '../domain/engine.ts';
+import AnimatedNumber from './AnimatedNumber';
+export default function EcoConfigurator({ comparison: c, selected, onVariant, onPreset, onReset }: { comparison: Comparison; selected: number; onVariant: (layer: string, variant: string) => void; onPreset: () => void; onReset: () => void }) {
+  const s = c.current.specimen;
+  const changes = c.current.layers.filter(l => l.changed).length;
+  return <aside className="configurator"><div className="section-label"><span>03 / 低碳改装台</span><SlidersHorizontal size={14} /></div><h2>换个零件，<br />换种可能。</h2><p className="aside-intro">不必完美。从一个小改变开始。</p><Button className="preset-button" onClick={onPreset} aria-label={`应用${s.presetName}`}><Leaf size={15} /><span>{s.presetName}</span><Zap size={14} /></Button>
+    <div className="swap-list">{c.current.layers.map((l, index) => <fieldset key={l.layer.id} className={`swap-group ${index === selected ? 'focused-layer' : ''}`}><legend><span className="swap-number">{String(index + 1).padStart(2, '0')}</span>{l.layer.short}{l.changed && <span className="swap-active">已改装</span>}</legend><select aria-label={`改装${l.layer.short}`} value={l.variant.id} onChange={event => onVariant(l.layer.id, event.target.value)}>{l.layer.variants.map(v => <option key={v.id} value={v.id}>{v.label}</option>)}</select></fieldset>)}</div>
+    <div className="comparison-total"><div className="comparison-heading"><span>单次碳账单</span><button onClick={onReset} aria-label="恢复基线"><RotateCcw size={12} />恢复</button></div><div className="before-row"><span>改装前</span><b>{format(c.baseline.totals.carbon)}<small> g CO₂e</small></b></div><div className="after-row"><span>改装后</span><div><AnimatedNumber value={c.current.totals.carbon} className="current-carbon" /><small>g CO₂e</small></div></div><div className={`saving-pill ${changes ? 'has-savings' : ''}`}><ArrowDown size={15} /><span>{changes ? `约减少 ${format(c.percent ?? 0)}%` : '选择方案，看看能改变多少'}</span><span>{changes}/6</span></div><div className="mini-comparison"><span>塑料 <b><AnimatedNumber value={c.current.totals.plastic} /> g</b><small>原 {format(c.baseline.totals.plastic)} g</small></span><span>水足迹 <b><AnimatedNumber value={waterTotal(c.current.totals.water)} /> L</b><small>原 {format(waterTotal(c.baseline.totals.water))} L</small></span></div><p className="tiny-note">{s.id === 'shirt' ? '以上为相同5次穿着服务的分摊，不是整件制造排放。' : s.id === 'ai' ? '水为运营蓝水小计；硬件供应链水尚未覆盖。' : '包含明确假设；更低碳不一定更省水。'}</p></div>
+  </aside>;
+}
